@@ -8,8 +8,7 @@ public class Task {
     protected String description;                                              // Описание задачи
     protected String status;                                                   // Статус задачи
 
-    public Task(int id, String name, String description, String status) {
-        this.id = id;
+    public Task(String name, String description, String status) {
         this.name = name;
         this.description = description;
         this.status = status;

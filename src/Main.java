@@ -12,34 +12,30 @@ public class Main {
     public static void printAll() {
         Manager manager = new Manager();
 
-        // Создаем объекты
+        Task task1 = new Task("Кошка", "Серая", "New");                                        //1 Задача 1
+        Task task2 = new Task("Собака", "Черная", "New");                                       //2 Задача 2
 
-        Task task1 = new Task(0, "Кошка", "Серая", "New");                         //1 Задача 1
-        Task task2 = new Task(0, "Собака", "Черная", "New");                       //4 Задача 2
-        Subtask subtask1 = new Subtask(0, "Вино", "Красное сухое", "New");               //2 Подзадача 1
-        Subtask subtask2 = new Subtask(0, "Вино", "Красное полусухое", "inProgress");    //3 Подзадача 2
-        Subtask subtask3 = new Subtask(0, "Вино", "Красное сладкое", "New");             //5 Подзадача 3
-        Epic epic1 = new Epic(0, "Купить вино", "Красное", "New");                       //6 Составная 1
-        Subtask subtask4 = new Subtask(0, "Крыло", "Заднее", "inProgress");              //7 Подзадача 3
-        Epic epic2 = new Epic(0, "Покупки для велосипеда", "Крыло", "New");              //8 Составная 2
-
-        // Добавляем объекты (присваиваются Ид)
-
-        int taksId1 = manager.addTask(task1);
-
+        int taskId1 = manager.addTask(task1);
         int taskId2 = manager.addTask(task2);
 
+        Epic epic1 = new Epic("Купить вино", "Красное", "New");                                 //3 Составная 1
         int epicId1 = manager.addEpic(epic1);
 
-        int sub1Id = manager.addSubtask(subtask1, epicId1);
+        Subtask subtask1 = new Subtask("Вино", "Красное сухое", "New", epicId1);               //4 Подзадача 1
+        Subtask subtask2 = new Subtask("Вино", "Красное полусухое", "inProgress", epicId1);    //5 Подзадача 2
+        Subtask subtask3 = new Subtask("Вино", "Красное сладкое", "New", epicId1);             //6 Подзадача 3
 
-        int sub2Id = manager.addSubtask(subtask2, epicId1);
+        int sub1Id = manager.addSubtask(subtask1);
+        int sub2Id = manager.addSubtask(subtask2);
+        int sub3Id = manager.addSubtask(subtask3);
 
-        int sub3Id = manager.addSubtask(subtask3, epicId1);
+        Epic epic2 = new Epic("Покупки для велосипеда", "Крыло", "New");                        //7 Составная 2
 
         int epicId2 = manager.addEpic(epic2);
 
-        int sub4Id = manager.addSubtask(subtask4, epicId2);
+        Subtask subtask4 = new Subtask("Крыло", "Заднее", "inProgress", epicId2);              //8 Подзадача 4
+
+        int sub4Id = manager.addSubtask(subtask4);
 
 
         System.out.println(manager.getAllTasks());
@@ -99,7 +95,7 @@ public class Main {
         System.out.println(manager.getAllEpics());
 
         System.out.println("Вывод по Ид:");
-        System.out.println(manager.getTask(taksId1));
+        System.out.println(manager.getTask(taskId1));
         System.out.println(manager.getSubtask(sub1Id));
         System.out.println(manager.getEpic(epicId1));
         System.out.println(manager.getEpicSubtasks(epicId1));
