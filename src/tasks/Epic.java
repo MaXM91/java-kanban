@@ -1,13 +1,15 @@
 package tasks;
 
+import managers.StatusTask;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     protected ArrayList<Integer> subtaskIds = new ArrayList<>();               // ИДы входящих составных задач
 
-    public Epic(int id, String name, String description, String status) {
-        super(id, name, description, status);
+    public Epic(String name, String description, StatusTask status) {
+        super(name, description, status);
     }
 
     public ArrayList<Integer> getSubtaskIds() {
@@ -55,7 +57,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "   Ид: " + id +
+        return  "   Ид: " + id +
                 "   Входящие Ид: " + variable() +
                 "   Имя: " + name +
                 "   Описание: " + description +

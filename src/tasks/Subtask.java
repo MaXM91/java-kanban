@@ -1,21 +1,20 @@
 package tasks;
 
+import managers.StatusTask;
+
 import java.util.Objects;
 
 public class Subtask extends Task {
 
     protected int epicId;                                                      // Принадлежность к Ид составной задачи
 
-    public Subtask(int id, String name, String description, String status) {
-        super(id, name, description, status);
+    public Subtask(String name, String description, StatusTask status, int epicId) {
+        super(name, description, status);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
         return epicId;
-    }
-
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "   Ид: " + id +
+        return  "   Ид: " + id +
                 "   Эпик Ид: " + epicId +
                 "   Имя: " + name +
                 "   Описание: " + description +

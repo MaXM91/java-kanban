@@ -1,115 +1,138 @@
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
-import managers.Manager;
+import tasks.*;
+import managers.*;
+
 
 public class Main {
 
     public static void main(String[] args) {
+
         printAll();
+
     }
 
+
     public static void printAll() {
-        Manager manager = new Manager();
+        Managers managers = new Managers();
 
-        // Создаем объекты
+        TaskManager taskManager = managers.getDefault();
+        HistoryManager historyManager = managers.getDefaultHistory();
 
-        Task task1 = new Task(0, "Кошка", "Серая", "New");                         //1 Задача 1
-        Task task2 = new Task(0, "Собака", "Черная", "New");                       //4 Задача 2
-        Subtask subtask1 = new Subtask(0, "Вино", "Красное сухое", "New");               //2 Подзадача 1
-        Subtask subtask2 = new Subtask(0, "Вино", "Красное полусухое", "inProgress");    //3 Подзадача 2
-        Subtask subtask3 = new Subtask(0, "Вино", "Красное сладкое", "New");             //5 Подзадача 3
-        Epic epic1 = new Epic(0, "Купить вино", "Красное", "New");                       //6 Составная 1
-        Subtask subtask4 = new Subtask(0, "Крыло", "Заднее", "inProgress");              //7 Подзадача 3
-        Epic epic2 = new Epic(0, "Покупки для велосипеда", "Крыло", "New");              //8 Составная 2
+        SimpleTask simpleTask1 = new SimpleTask("Кошка", "Серая", StatusTask.NEW);                       //1 Задача 1
+        SimpleTask simpleTask2 = new SimpleTask("Собака", "Черная", StatusTask.NEW);                     //2 Задача 2
 
-        // Добавляем объекты (присваиваются Ид)
+        int taskId1 = taskManager.addTask(simpleTask1);
+        int taskId2 = taskManager.addTask(simpleTask2);
 
-        int taksId1 = manager.addTask(task1);
+        Epic epic1 = new Epic("Купить вино", "Красное", StatusTask.NEW);                                 //3 Составная 1
+        int epicId1 = taskManager.addEpic(epic1);
 
-        int taskId2 = manager.addTask(task2);
+        Subtask subtask1 = new Subtask("Вино", "Красное сухое", StatusTask.NEW, epicId1);                //4 Подзадача 1
+        Subtask subtask2 = new Subtask("Вино", "Красное полусухое", StatusTask.IN_PROGRESS, epicId1);    //5 Подзадача 2
+        Subtask subtask3 = new Subtask("Вино", "Красное сладкое", StatusTask.NEW, epicId1);              //6 Подзадача 3
 
-        int epicId1 = manager.addEpic(epic1);
+        int sub1Id = taskManager.addSubtask(subtask1);
+        int sub2Id = taskManager.addSubtask(subtask2);
+        int sub3Id = taskManager.addSubtask(subtask3);
 
-        int sub1Id = manager.addSubtask(subtask1, epicId1);
+        Epic epic2 = new Epic("Покупки для велосипеда", "Крыло", StatusTask.NEW);                        //7 Составная 2
 
-        int sub2Id = manager.addSubtask(subtask2, epicId1);
+        int epicId2 = taskManager.addEpic(epic2);
 
-        int sub3Id = manager.addSubtask(subtask3, epicId1);
+        Subtask subtask4 = new Subtask("Крыло", "Заднее", StatusTask.IN_PROGRESS, epicId2);              //8 Подзадача 4
 
-        int epicId2 = manager.addEpic(epic2);
-
-        int sub4Id = manager.addSubtask(subtask4, epicId2);
+        int sub4Id = taskManager.addSubtask(subtask4);
 
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllSubtasks());
-        System.out.println(manager.getAllEpics());
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllSubtasks());
+        System.out.println(taskManager.getAllEpics());
 
-        task1.setName("Собака");
-        task1.setDescription("Черная");
-        task1.setStatus("Done");
-        manager.updateTask(task1);
+        simpleTask1.setName("Собака");
+        simpleTask1.setDescription("Черная");
+        simpleTask1.setStatus(StatusTask.DONE);
+        taskManager.updateTask(simpleTask1);
 
         subtask1.setName("Шоколад");
         subtask1.setDescription("Черный");
-        subtask1.setStatus("New");
-        manager.updateSubtask(subtask1);
+        subtask1.setStatus(StatusTask.NEW);
+        taskManager.updateSubtask(subtask1);
 
         subtask2.setName("Шоколад");
         subtask2.setDescription("Белый");
-        subtask2.setStatus("New");
-        manager.updateSubtask(subtask2);
+        subtask2.setStatus(StatusTask.NEW);
+        taskManager.updateSubtask(subtask2);
 
-        task2.setName("Пиво");
-        task2.setDescription("Чешское");
-        task2.setStatus("New");
-        manager.updateTask(task2);
+        simpleTask2.setName("Пиво");
+        simpleTask2.setDescription("Чешское");
+        simpleTask2.setStatus(StatusTask.NEW);
+        taskManager.updateTask(simpleTask2);
 
         subtask3.setName("Колбаса");
         subtask3.setDescription("Копченая");
-        subtask3.setStatus("New");
-        manager.updateSubtask(subtask3);
+        subtask3.setStatus(StatusTask.NEW);
+        taskManager.updateSubtask(subtask3);
 
         epic1.setName("Купить еду");
         epic1.setDescription("На день");
-        epic1.setStatus("New");
-        manager.updateEpicTask(epic1);
+        epic1.setStatus(StatusTask.DONE);
+        taskManager.updateEpicTask(epic1);
 
         subtask4.setName("Руль");
         subtask4.setDescription("Сплав аллюминия");
-        subtask4.setStatus("Done");
-        manager.updateSubtask(subtask4);
+        subtask4.setStatus(StatusTask.DONE);
+        taskManager.updateSubtask(subtask4);
 
         epic2.setName("Покупки для велосипеда");
         epic2.setDescription("Руль");
-        epic2.setStatus("New");
-        manager.updateEpicTask(epic2);
+        epic2.setStatus(StatusTask.NEW);
+        taskManager.updateEpicTask(epic2);
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllSubtasks());
-        System.out.println(manager.getAllEpics());
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllSubtasks());
+        System.out.println(taskManager.getAllEpics());
 
-        manager.removeTaskById(taskId2);
-        manager.removeSubtaskById(sub2Id);
-        manager.removeEpicById(epicId2);
+        taskManager.removeTaskById(taskId2);
+        taskManager.removeSubtaskById(sub2Id);
+        taskManager.removeEpicById(epicId2);
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllSubtasks());
-        System.out.println(manager.getAllEpics());
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllSubtasks());
+        System.out.println(taskManager.getAllEpics());
 
         System.out.println("Вывод по Ид:");
-        System.out.println(manager.getTask(taksId1));
-        System.out.println(manager.getSubtask(sub1Id));
-        System.out.println(manager.getEpic(epicId1));
-        System.out.println(manager.getEpicSubtasks(epicId1));
+        System.out.println(taskManager.getTask(taskId1));
+        historyManager.add(taskManager.getTask(taskId1));
 
-        manager.removeAllTasks();
-        manager.removeAllSubtasks();
-        manager.removeAllEpics();
+            for(Task task:historyManager.getHistory()) {
+                System.out.println(task);
+            }
 
-        System.out.println(manager.getAllTasks());
-        System.out.println(manager.getAllSubtasks());
-        System.out.println(manager.getAllEpics());
+        System.out.println(taskManager.getSubtask(sub1Id));
+        historyManager.add(taskManager.getSubtask(sub1Id));
+
+            for(Task task:historyManager.getHistory()) {
+                System.out.println(task);
+            }
+
+        System.out.println(taskManager.getEpic(epicId1));
+        historyManager.add(taskManager.getEpic(epicId1));
+
+            for(Task task:historyManager.getHistory()) {
+                System.out.println(task);
+            }
+
+        System.out.println(taskManager.getEpicSubtasks(epicId1));
+
+
+
+
+
+        taskManager.removeAllTasks();
+        taskManager.removeAllSubtasks();
+        taskManager.removeAllEpics();
+
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllSubtasks());
+        System.out.println(taskManager.getAllEpics());
     }
 }

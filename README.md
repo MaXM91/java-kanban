@@ -1,4 +1,4 @@
-# Manager tasks.Task  
+# Manager tasks.SimpleTask  
   
 ### Хранилище принимает готовые "frontend объекты", присваивает  
 ### им ИД, возвращает ИД и распределяет по типу в HashMap таблицах.  
