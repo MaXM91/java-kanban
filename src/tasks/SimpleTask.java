@@ -5,9 +5,9 @@ import managers.StatusTask;
 import java.util.Objects;
 
 public class SimpleTask extends Task {
-        public SimpleTask(String name, String description, StatusTask status) {
-            super(name, description, status);
-        }
+    public SimpleTask(String name, String description, StatusTask status) {
+        super(name, description, status);
+    }
 
 
     @Override

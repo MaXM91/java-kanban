@@ -103,28 +103,25 @@ public class Main {
         System.out.println(taskManager.getTask(taskId1));
         historyManager.add(taskManager.getTask(taskId1));
 
-            for(Task task:historyManager.getHistory()) {
-                System.out.println(task);
-            }
+        for (Task task : historyManager.getHistory()) {
+            System.out.println(task);
+        }
 
         System.out.println(taskManager.getSubtask(sub1Id));
         historyManager.add(taskManager.getSubtask(sub1Id));
 
-            for(Task task:historyManager.getHistory()) {
-                System.out.println(task);
-            }
+        for (Task task : historyManager.getHistory()) {
+            System.out.println(task);
+        }
 
         System.out.println(taskManager.getEpic(epicId1));
         historyManager.add(taskManager.getEpic(epicId1));
 
-            for(Task task:historyManager.getHistory()) {
-                System.out.println(task);
-            }
+        for (Task task : historyManager.getHistory()) {
+            System.out.println(task);
+        }
 
         System.out.println(taskManager.getEpicSubtasks(epicId1));
-
-
-
 
 
         taskManager.removeAllTasks();
