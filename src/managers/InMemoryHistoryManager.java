@@ -7,23 +7,22 @@ import java.util.List;
 
 public class InMemoryHistoryManager<T extends Task> implements HistoryManager {
 
-    protected ArrayList<T> historyTaskIds = new ArrayList<>();
+    int MAX_HISTORY = 10;
+
+    protected ArrayList<T> historyTasks = new ArrayList<>();
 
     @Override
-    public void add(Task task) {
-        if (historyTaskIds.size() == 10) {
-            for (int i = 0; i < MAX_HISTORY - 1; i++) {
-                historyTaskIds.add(i, historyTaskIds.get(i + 1));
-            }
-            historyTaskIds.add(MAX_HISTORY - 1, (T) task);
+    public void add() {
+        if (historyTasks.size() == MAX_HISTORY) {
+            historyTasks.remove(0);
+            historyTasks.add((T) InMemoryTaskManager.historyTask);
         } else {
-            historyTaskIds.add((T) task);
+            historyTasks.add((T) InMemoryTaskManager.historyTask);
         }
     }
 
-
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<>(historyTaskIds);
+        return new ArrayList<>(historyTasks);
     }
 }

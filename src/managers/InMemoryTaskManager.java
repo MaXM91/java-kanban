@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskTaskManager implements TaskManager {
+public class InMemoryTaskManager implements TaskManager {
 
     private int nextTask = 1;
+    public static Task historyTask;
+    HistoryManager historyManager = Managers.getDefaultHistory();
     protected HashMap<Integer, SimpleTask> tasks = new HashMap<>();
     protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected HashMap<Integer, Epic> epics = new HashMap<>();
@@ -124,19 +126,29 @@ public class InMemoryTaskTaskManager implements TaskManager {
 
     @Override
     public SimpleTask getTask(Integer taskId) {                                // Возвращаем задачу по ИД
+        historyTask = tasks.get(taskId);
+        historyManager.add();
         return tasks.get(taskId);
     }
 
     @Override
     public Subtask getSubtask(Integer subtaskId) {                             // Возвращаем подзадачу по ИД
+        historyTask = subtasks.get(subtaskId);
+        historyManager.add();
         return subtasks.get(subtaskId);
     }
 
     @Override
     public Epic getEpic(Integer epicId) {                                      // Возвращаем составную задачу по ИД
+        historyTask = epics.get(epicId);
+        historyManager.add();
         return epics.get(epicId);
     }
 
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
 
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {                    // Возвращаем список подзадач по Ид
@@ -150,8 +162,8 @@ public class InMemoryTaskTaskManager implements TaskManager {
         return subtasks;                                                       //  Возвращаем новый лист с данными
     }
 
-    @Override
-    public void updateEpicStatus(int nextTask) {                               // Определение статуса составной
+
+    private void updateEpicStatus(int nextTask) {                               // Определение статуса составной
         int i = 0;                                                             // задачи по статусу подзадач.
         int j = 0;
 

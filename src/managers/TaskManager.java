@@ -22,7 +22,8 @@ public interface TaskManager {
     void removeTaskById(int id);                                               // Удалить простую задачу по Ид
 
     void removeSubtaskById(Integer id);                                        // Удалить составную задачу по Ид, удалить ее из списка
-                                                                               // подзадач составной задачи
+
+    // подзадач составной задачи
     void removeEpicById(int id);                                               // Удалить составную задачу по Ид и удалить ее подзадачи
 
     void removeAllTasks();                                                     // Удалить все простые задачи
@@ -43,7 +44,8 @@ public interface TaskManager {
 
     Epic getEpic(Integer epicId);                                              // Вернуть составную задачу по Ид, записать в историю
 
+    List<Task> getHistory();
+
     ArrayList<Subtask> getEpicSubtasks(int epicId);                            // Добавить Ид подзадачи в список подзадачь составной задачи
 
-    void updateEpicStatus(int nextTask);                                       // Назначить статус составной задачи в
-}                                                                              // зависимости от статусов подзадач
+}

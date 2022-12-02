@@ -54,7 +54,6 @@ public class Epic extends Task {
         return string;
     }
 
-
     @Override
     public String toString() {
         return  "   Ид: " + id +
