@@ -1,20 +1,16 @@
 import tasks.*;
 import managers.*;
 
-
 public class Main {
 
     public static void main(String[] args) {
-
         printAll();
-
     }
 
     public static void printAll() {
 
-        Managers managers = new Managers();
-        TaskManager taskManager = managers.getDefault();
-
+        final Managers managers = new Managers();
+        final TaskManager taskManager = managers.getDefault();
 
         SimpleTask simpleTask1 = new SimpleTask("Кошка", "Серая", StatusTask.NEW);                       //1 Задача 1
         SimpleTask simpleTask2 = new SimpleTask("Собака", "Черная", StatusTask.NEW);                     //2 Задача 2
@@ -40,7 +36,6 @@ public class Main {
         Subtask subtask4 = new Subtask("Крыло", "Заднее", StatusTask.IN_PROGRESS, epicId2);              //8 Подзадача 4
 
         int sub4Id = taskManager.addSubtask(subtask4);
-
 
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllSubtasks());
@@ -122,18 +117,13 @@ public class Main {
 
         System.out.println(taskManager.getEpic(epicId1));
 
+        System.out.println(taskManager.getEpic(epicId1));
 
         System.out.println(taskManager.getEpic(epicId1));
 
-
         System.out.println(taskManager.getEpic(epicId1));
 
-
         System.out.println(taskManager.getEpic(epicId1));
-
-
-        System.out.println(taskManager.getEpic(epicId1));
-
 
         System.out.println(taskManager.getEpic(epicId1));
 
@@ -141,6 +131,7 @@ public class Main {
         for (Task task : taskManager.getHistory()) {
             System.out.println(task);
         }
+
         System.out.println(taskManager.getEpicSubtasks(epicId1));
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         taskManager.removeAllTasks();

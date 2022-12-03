@@ -9,8 +9,7 @@ import java.util.List;
 public class InMemoryTaskManager implements TaskManager {
 
     private int nextTask = 1;
-    public static Task historyTask;
-    HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
     protected HashMap<Integer, SimpleTask> tasks = new HashMap<>();
     protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected HashMap<Integer, Epic> epics = new HashMap<>();
@@ -126,23 +125,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SimpleTask getTask(Integer taskId) {                                // Возвращаем задачу по ИД
-        historyTask = tasks.get(taskId);
-        historyManager.add();
-        return tasks.get(taskId);
+        SimpleTask task = tasks.get(taskId);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
     public Subtask getSubtask(Integer subtaskId) {                             // Возвращаем подзадачу по ИД
-        historyTask = subtasks.get(subtaskId);
-        historyManager.add();
-        return subtasks.get(subtaskId);
+        Subtask subtask = subtasks.get(subtaskId);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     @Override
     public Epic getEpic(Integer epicId) {                                      // Возвращаем составную задачу по ИД
-        historyTask = epics.get(epicId);
-        historyManager.add();
-        return epics.get(epicId);
+        Epic epic = epics.get(epicId);
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
