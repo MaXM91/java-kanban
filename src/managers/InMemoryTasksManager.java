@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager {
+public class InMemoryTasksManager implements TasksManager {
 
     private int nextTask = 1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
     protected HashMap<Integer, SimpleTask> tasks = new HashMap<>();
     protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected HashMap<Integer, Epic> epics = new HashMap<>();
@@ -196,5 +196,4 @@ public class InMemoryTaskManager implements TaskManager {
             epics.get(nextTask).setStatus(StatusTask.IN_PROGRESS);
         }
     }
-
 }

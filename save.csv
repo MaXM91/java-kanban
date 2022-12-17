@@ -1,0 +1,7 @@
+id,type,name,status,description,epic
+1,SIMPLE_TASK,Собака,DONE,Черная,
+3,EPIC,Купить еду,NEW,На день,
+4,SUBTASK,Шоколад,NEW,Черный,3,
+6,SUBTASK,Колбаса,NEW,Копченая,3,
+
+4,3,1,

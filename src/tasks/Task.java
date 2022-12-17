@@ -22,19 +22,27 @@ public abstract class Task {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public void setStatus(StatusTask status) {
         this.status = status;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getId() {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public StatusTask getStatus() {
         return status;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

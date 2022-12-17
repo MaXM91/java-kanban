@@ -5,7 +5,7 @@ import tasks.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface TaskManager {
+public interface TasksManager {
 
     Integer addTask(SimpleTask simpleTask);                                    // Присвоить Ид простой задаче и записать в tasks
 

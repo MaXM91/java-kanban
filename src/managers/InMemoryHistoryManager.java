@@ -16,10 +16,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (linkedHashMap.containsKey(task.getId())) {
             remove(task.getId());
         }
-        linkedHashMap.put(task.getId(), linkLast(task));
+        linkLast(task);
+        linkedHashMap.put(task.getId(), tail);
     }
 
-    private Node<Task> linkLast(Task task) {
+    private void linkLast(Task task) {
         final Node<Task> newNode = new Node<>(tail, task, null);
         tail = newNode;
 
@@ -28,7 +29,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             tail.prev.next = newNode;
         }
-        return newNode;
     }
 
     @Override
