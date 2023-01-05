@@ -2,11 +2,13 @@ package tasks;
 
 import managers.StatusTask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SimpleTask extends Task {
-    public SimpleTask(String name, String description, StatusTask status) {
-        super(name, description, status);
+    public SimpleTask(String name, String description, StatusTask status, LocalDateTime startDateTime, Duration duration) {
+        super(name, description, status, startDateTime, duration);
     }
 
     @Override
@@ -31,9 +33,11 @@ public class SimpleTask extends Task {
 
     @Override
     public String toString() {
-        return  "   Ид: " + id +
+        return "   Ид: " + id +
                 "   Имя: " + name +
                 "   Описание: " + description +
-                "   Статус: " + status + "\n";
+                "   Статус: " + status +
+                "   Время старта: " + startDateTime +
+                "   Продолжительность: " + duration + "\n";
     }
 }

@@ -4,12 +4,13 @@ import tasks.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TasksManager {
 
-    Integer addTask(SimpleTask simpleTask);                                    // Присвоить Ид простой задаче и записать в tasks
+    Integer addTask(SimpleTask simpleTask) throws TasksValidateException;                                    // Присвоить Ид простой задаче и записать в tasks
 
-    Integer addSubtask(Subtask subtask);                                       // Присвоить Ид простой подзадаче и записать в subtasks
+    Integer addSubtask(Subtask subtask) throws TasksValidateException;                                       // Присвоить Ид простой подзадаче и записать в subtasks
 
     Integer addEpic(Epic epic);                                                // Присвоить Ид составной задаче и записать в epics
 
@@ -47,5 +48,7 @@ public interface TasksManager {
     List<Task> getHistory();
 
     ArrayList<Subtask> getEpicSubtasks(int epicId);                            // Добавить Ид подзадачи в список подзадачь составной задачи
+
+    TreeSet<Task> getPrioritizedTasks();
 
 }
