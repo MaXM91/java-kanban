@@ -2,20 +2,22 @@ package managers;
 
 import tasks.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface TasksManager {
 
-    Integer addTask(SimpleTask simpleTask);                                    // Присвоить Ид простой задаче и записать в tasks
+    Integer addTask(SimpleTask simpleTask) throws TasksValidateException;                                    // Присвоить Ид простой задаче и записать в tasks
 
-    Integer addSubtask(Subtask subtask);                                       // Присвоить Ид простой подзадаче и записать в subtasks
+    Integer addSubtask(Subtask subtask) throws TasksValidateException;                                       // Присвоить Ид простой подзадаче и записать в subtasks
 
     Integer addEpic(Epic epic);                                                // Присвоить Ид составной задаче и записать в epics
 
-    void updateTask(SimpleTask simpleTask);                                    // Обновить простую задачу
+    void updateTask(SimpleTask simpleTask) throws TasksValidateException;                                    // Обновить простую задачу
 
-    void updateSubtask(Subtask subtask);                                       // Обновить подзадачу и поверить статус составной
+    void updateSubtask(Subtask subtask) throws TasksValidateException;                                       // Обновить подзадачу и поверить статус составной
 
     void updateEpicTask(Epic epic);                                            // Обновить составную задачу и проверить статус
 
@@ -47,5 +49,7 @@ public interface TasksManager {
     List<Task> getHistory();
 
     ArrayList<Subtask> getEpicSubtasks(int epicId);                            // Добавить Ид подзадачи в список подзадачь составной задачи
+
+    Map<LocalDateTime, Task> getPrioritizedTasks();
 
 }

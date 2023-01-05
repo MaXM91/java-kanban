@@ -2,53 +2,78 @@ package managers;
 
 import tasks.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTasksManager implements TasksManager {
 
     private int nextTask = 1;
-    protected final HistoryManager historyManager = Managers.getDefaultHistory();
-    protected HashMap<Integer, SimpleTask> tasks = new HashMap<>();
-    protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    protected HashMap<Integer, Epic> epics = new HashMap<>();
+    protected static final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected static HashMap<Integer, SimpleTask> tasks = new HashMap<>();
+    protected static HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected static HashMap<Integer, Epic> epics = new HashMap<>();
+    private static final Comparator<LocalDateTime> comparator = (o1, o2) -> {
+        if (o1.isBefore(o2)) {
+            return -1;
+        } else if (o1.isAfter(o2)) {
+            return 1;
+        }
+        return 0;
+    };
+    protected static Map<LocalDateTime, Task> validatedPrioritizedTasks = new TreeMap<>(comparator);
 
     @Override
-    public Integer addTask(SimpleTask simpleTask) {                            // Присваиваем полученной задаче Ид и
+    public Integer addTask(SimpleTask simpleTask) throws TasksValidateException { // Присваиваем полученной задаче Ид и
+        if (validation(simpleTask)) {
+            throw new TasksValidateException("Данный временной промежуток занят!");
+        }
         simpleTask.setId(nextTask++);                                          // записываем в tasks.
         tasks.put(simpleTask.getId(), simpleTask);
+        addValidatedPrioritizedTasks(simpleTask);
         return simpleTask.getId();
     }
 
     @Override
-    public Integer addSubtask(Subtask subtask) {                               // Присваиваем полученной подзадаче Ид,
+    public Integer addSubtask(Subtask subtask) throws TasksValidateException { // Присваиваем полученной подзадаче Ид,
+        if (validation(subtask)) {
+            throw new TasksValidateException("Данный временной промежуток занят!");
+        }
         subtask.setId(nextTask++);                                             // Присваиваем Ид.
         epics.get(subtask.getEpicId()).setSubtaskIds(subtask.getId());         // Записываем Ид подзадачи в список составной задачи.
         subtasks.put(subtask.getId(), subtask);                                // Записываем подзадачу в subtasks.
+        addValidatedPrioritizedTasks(subtask);
         updateEpicStatus(subtask.getEpicId());                                 // Переопределяем статус составной задачи в
+        updateEpicTime(subtask.getEpicId());
         return subtask.getId();                                                // которую входит эта подзадача. Возвращаем Ид.
     }
 
     @Override
-    public Integer addEpic(Epic epic) {                                        // Присваиваем полученной составной задаче Ид,
-        epic.setId(nextTask++);                                                // записываем в epics.
+    public Integer addEpic(Epic epic) {                                        // Присваиваем полученной составной
+        epic.setId(nextTask++);                                                // задаче Ид, записываем в epics.
         epics.put(epic.getId(), epic);                                         // Возвращаем Ид.
         return epic.getId();
     }
 
     @Override
-    public void updateTask(SimpleTask simpleTask) {                            // Обновляем простую задачу.
+    public void updateTask(SimpleTask simpleTask) throws TasksValidateException { // Обновляем простую задачу.
+        if (validation(simpleTask)) {
+            throw new TasksValidateException("Данный временной промежуток занят!");
+        }
         if (tasks.containsKey(simpleTask.getId())) {
             tasks.put(simpleTask.getId(), simpleTask);
+            addValidatedPrioritizedTasks(simpleTask);
         }
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {                               // Обновляем подзадачу.
+    public void updateSubtask(Subtask subtask) throws TasksValidateException { // Обновляем подзадачу.
+        if (validation(subtask)) {
+            throw new TasksValidateException("Данный временной промежуток занят!");
+        }
         if (subtasks.containsKey(subtask.getId()) && epics.containsKey(subtask.getEpicId())) {
             subtasks.put(subtask.getId(), subtask);
             updateEpicStatus(subtask.getEpicId());
+            updateEpicTime(subtask.getEpicId());
         }
     }
 
@@ -57,11 +82,13 @@ public class InMemoryTasksManager implements TasksManager {
         if (epics.containsKey(epic.getId())) {
             epics.put(epic.getId(), epic);                                     // Обновляем статус по статусу подзадач.
             updateEpicStatus(epic.getId());
+            updateEpicTime(epic.getId());
         }
     }
 
     @Override
     public void removeTaskById(int id) {                                       // 2.6 Удаляем простую задачу по Id.
+        deleteValidatedPrioritizedTasks(tasks.get(id));
         historyManager.remove(id);
         tasks.remove(id);
     }
@@ -69,16 +96,19 @@ public class InMemoryTasksManager implements TasksManager {
     @Override
     public void removeSubtaskById(Integer id) {                                // 2.6 Удаляем подзадачу по Id.
         int idEpic = subtasks.get(id).getEpicId();                             // Обновляем статус составной задачи.
+        deleteValidatedPrioritizedTasks(subtasks.get(id));
         historyManager.remove(id);
         epics.get(idEpic).removeSubtaskId(id);
         subtasks.remove(id);
         updateEpicStatus(idEpic);
+        updateEpicTime(idEpic);
     }
 
     @Override
     public void removeEpicById(int id) {                                       //  2.6 Удаляем составную задачу по Id.
         for (Integer idSub : epics.get(id).getSubtaskIds()) {                  // Также удаляем её подзадачи.
             historyManager.remove(idSub);
+            deleteValidatedPrioritizedTasks(subtasks.get(idSub));
             subtasks.remove(idSub);
         }
         historyManager.remove(id);
@@ -88,6 +118,7 @@ public class InMemoryTasksManager implements TasksManager {
     @Override
     public void removeAllTasks() {                                             // Удаление всех задач.
         for (Integer taskId : tasks.keySet()) {
+            deleteValidatedPrioritizedTasks(tasks.get(taskId));
             historyManager.remove(taskId);
         }
         tasks.clear();
@@ -98,12 +129,13 @@ public class InMemoryTasksManager implements TasksManager {
         for (Integer subtaskId : subtasks.keySet()) {                          // Обновляем статус составной задачи.
             if (epics.get(subtasks.get(subtaskId).getEpicId()).getSubtaskIds().contains(subtaskId)) {
                 epics.get(subtasks.get(subtaskId).getEpicId()).removeSubtaskId(subtaskId);
+                deleteValidatedPrioritizedTasks(subtasks.get(subtaskId));
                 updateEpicStatus(subtasks.get(subtaskId).getEpicId());
+                updateEpicTime(subtasks.get(subtaskId).getEpicId());
             }
             historyManager.remove(subtaskId);
         }
         subtasks.clear();
-
     }
 
     @Override
@@ -111,6 +143,7 @@ public class InMemoryTasksManager implements TasksManager {
         for (Integer epicId : epics.keySet()) {
             for (Integer subtaskId : epics.get(epicId).getSubtaskIds()) {
                 historyManager.remove(subtaskId);
+                deleteValidatedPrioritizedTasks(subtasks.get(subtaskId));
                 subtasks.remove(subtaskId);
             }
             historyManager.remove(epicId);
@@ -155,7 +188,7 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public List<Task> getHistory() {
+    public List<Task> getHistory() {                                           // Возвращаем список запросов(историю)
         return historyManager.getHistory();
     }
 
@@ -164,20 +197,24 @@ public class InMemoryTasksManager implements TasksManager {
         ArrayList<Subtask> subtasks = new ArrayList<>();                       // составной задачи
 
         if (epics.containsKey(epicId)) {
-            for (Integer subtaskId : epics.get(epicId).getSubtaskIds()) {      // Записываем в новый лист подзадачи эпика
-                subtasks.add(this.subtasks.get(subtaskId));
+            for (Integer subtaskId : epics.get(epicId).getSubtaskIds()) {      // Записываем в новый лист
+                subtasks.add(InMemoryTasksManager.subtasks.get(subtaskId));    // подзадачи эпика
             }
         }
         return subtasks;                                                       //  Возвращаем новый лист с данными
     }
 
+    @Override
+    public Map<LocalDateTime, Task> getPrioritizedTasks() {                    // Вывод упорядоченного по времени
+        return validatedPrioritizedTasks;                                      // списка задач и подзадач
+    }
 
-    private void updateEpicStatus(int nextTask) {                               // Определение статуса составной
+    private void updateEpicStatus(int epicId) {                                // Определение статуса составной
         int i = 0;                                                             // задачи по статусу подзадач.
         int j = 0;
 
-        int list = epics.get(nextTask).getSubtaskIds().size();
-        for (Integer idSub : epics.get(nextTask).getSubtaskIds()) {
+        int list = epics.get(epicId).getSubtaskIds().size();
+        for (Integer idSub : epics.get(epicId).getSubtaskIds()) {
             if (subtasks.get(idSub).getStatus().equals(StatusTask.DONE)) {
                 ++i;
             }
@@ -187,13 +224,104 @@ public class InMemoryTasksManager implements TasksManager {
             }
         }
         if (list == 0) {
-            epics.get(nextTask).setStatus(StatusTask.DONE);
+            epics.get(epicId).setStatus(StatusTask.DONE);
         } else if (i == list) {
-            epics.get(nextTask).setStatus(StatusTask.DONE);
+            epics.get(epicId).setStatus(StatusTask.DONE);
         } else if (j == list) {
-            epics.get(nextTask).setStatus(StatusTask.NEW);
+            epics.get(epicId).setStatus(StatusTask.NEW);
         } else {
-            epics.get(nextTask).setStatus(StatusTask.IN_PROGRESS);
+            epics.get(epicId).setStatus(StatusTask.IN_PROGRESS);
         }
+    }
+
+    private void updateEpicTime(int epicId) {                                  // Корректировка временного интервала
+        if (!epics.get(epicId).getSubtaskIds().isEmpty()) {                    // эпика по интервалам входящих подзадач
+            LocalDateTime start = subtasks.get(epics.get(epicId).getSubtaskIds().get(0)).getStartDateTime();
+            LocalDateTime end = subtasks.get(epics.get(epicId).getSubtaskIds().get(0)).getEndTime();
+
+            for (Integer subtaskIds : epics.get(epicId).getSubtaskIds()) {
+
+                if (start.isAfter(subtasks.get(subtaskIds).getStartDateTime())) {
+                    start = subtasks.get(subtaskIds).getStartDateTime();
+                }
+
+                if (end.isBefore(subtasks.get(subtaskIds).getEndTime())) {
+                    end = subtasks.get(subtaskIds).getEndTime();
+                }
+            }
+            epics.get(epicId).setStartTime(start);
+            epics.get(epicId).setEndTime(end);
+            epics.get(epicId).setDuration();
+        }
+    }
+
+    private boolean validation(Task task) {                                    // Валидация задач по временным
+        List<Task> intersections = findIntersectionsTime(task);                // интервалам
+        Task frontTask;
+
+        if (intersections.size() > 1) {
+            return true;
+        } else if (intersections.size() == 0) {
+            if (task.getId() == 0) {
+                return false;
+            } else {
+                if (task instanceof SimpleTask) {
+                    deleteValidatedPrioritizedTasks(tasks.get(task.getId()));
+                    return false;
+                } else if (task instanceof Subtask) {
+                    deleteValidatedPrioritizedTasks(subtasks.get(task.getId()));
+                    return false;
+                }
+            }
+        } else {
+            frontTask = intersections.get(0);
+
+            if (task.getId() != 0) {
+                if (task instanceof SimpleTask) {
+                    if (frontTask.getId() == task.getId()) {
+                        deleteValidatedPrioritizedTasks(tasks.get(task.getId()));
+                        return false;
+                    }
+                } else if (task instanceof Subtask) {
+                    if (frontTask.getId() == task.getId()) {
+                        deleteValidatedPrioritizedTasks(subtasks.get(task.getId()));
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private List<Task> findIntersectionsTime(Task task) {                            // Поиск пересечения интервалов
+        LocalDateTime timeStartTask = task.getStartDateTime();                 // и граничных точек
+        LocalDateTime timeEndTask = timeStartTask.plusMinutes(task.getDuration().toMinutes());
+        LocalDateTime taskStart;
+        LocalDateTime taskEnd;
+        List<Task> intersectionsTaskIds = new ArrayList<>();
+
+        for (Task taskValidation : validatedPrioritizedTasks.values()) {
+            taskStart = taskValidation.getStartDateTime();
+            taskEnd = taskStart.plusMinutes(taskValidation.getDuration().toMinutes());
+
+            if ((timeStartTask.isAfter(taskStart) || timeStartTask.equals(taskStart)) &&
+                    (timeStartTask.isBefore(taskEnd) || timeStartTask.equals(taskEnd))) {
+                intersectionsTaskIds.add(taskValidation);
+            }
+            if ((timeEndTask.isAfter(taskStart) || timeEndTask.equals(taskStart)) &&
+                    (timeEndTask.isBefore(taskEnd) || timeEndTask.equals(taskEnd))) {
+                intersectionsTaskIds.add(taskValidation);
+            }
+        }
+        return intersectionsTaskIds;
+    }
+
+    private void deleteValidatedPrioritizedTasks(Task task) {                  // Удаление задачь из списка валидации
+        validatedPrioritizedTasks.remove(task.getStartDateTime());
+    }
+
+    private void addValidatedPrioritizedTasks(Task task) {                     // Добавление задач в список валидации
+        validatedPrioritizedTasks.put(task.getStartDateTime(), task);
     }
 }

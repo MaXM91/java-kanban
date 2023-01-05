@@ -1,7 +1,6 @@
-id,type,name,status,description,epic
-1,SIMPLE_TASK,Собака,DONE,Черная,
-3,EPIC,Купить еду,NEW,На день,
-4,SUBTASK,Шоколад,NEW,Черный,3,
-6,SUBTASK,Колбаса,NEW,Копченая,3,
+id,type,name,status,description,startDateTime,duration,epic
+3,SIMPLE_TASK,задача1,NEW,проверочная,2010.01.11 08:07:00,450,null
+1,EPIC,Эпик1,NEW,Проверочный,2010.01.02 02:07:00,90,null
+2,SUBTASK,подзадача1,NEW,проверочная,2010.01.02 02:07:00,90,1
 
-4,3,1,
+HistoryIsEmpty

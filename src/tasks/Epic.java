@@ -1,15 +1,19 @@
 package tasks;
 
 import managers.StatusTask;
+import managers.TypeTask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     protected ArrayList<Integer> subtaskIds = new ArrayList<>();               // ИДы входящих составных задач
+    LocalDateTime endTime;
 
-    public Epic(String name, String description, StatusTask status) {
-        super(name, description, status);
+    public Epic(String name, String description, StatusTask status, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
     }
 
     public ArrayList<Integer> getSubtaskIds() {
@@ -22,6 +26,22 @@ public class Epic extends Task {
 
     public void removeSubtaskId(Integer id) {
         subtaskIds.remove(id);
+    }
+
+    public TypeTask getTypeTask() {
+        return TypeTask.EPIC;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startDateTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDuration() {
+        this.duration = Duration.between(startDateTime, endTime);
     }
 
     @Override
@@ -56,11 +76,13 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return  "   Ид: " + id +
+        return "   Ид: " + id +
                 "   Входящие Ид: " + variable() +
                 "   Имя: " + name +
                 "   Описание: " + description +
-                "   Статус: " + status + "\n";
+                "   Статус: " + status +
+                "   Время начала: " + startDateTime +
+                "   Продолжительность: " + duration + "\n";
 
     }
 
