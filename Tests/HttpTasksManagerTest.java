@@ -1,24 +1,30 @@
-
-import managers.*;
+import http.HttpTasksManager;
+import http.KVServer;
+import managers.StatusTask;
 import managers.exceptions.TasksValidateException;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.SimpleTask;
 import tasks.Subtask;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URI;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasksManager> {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class HttpTasksManagerTest extends FileBackedTasksManagerTest {
+    static KVServer server;
 
     @BeforeEach
     public void startManager() throws IOException {
-        tasksManager = new FileBackedTasksManager(Path.of("save.csv"));
+        server = new KVServer();
+        server.start();
+
+        tasksManager = new HttpTasksManager(URI.create("http://localhost:8081"));
 
         LocalDateTime epic1LocalDateTime = LocalDateTime.of(2010, 1, 1, 1, 22, 0);
         Duration epic1Duration = Duration.ofMinutes(90);
@@ -52,9 +58,14 @@ class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasksManager
         tasksManager.removeAllSubtasks();
         tasksManager.removeAllEpics();
     }
+    
+    @AfterEach
+    void stop() {
+        server.stop();
+    }
 
     @Test
-    void saveLoadFile() throws IOException, TasksValidateException {
+    void saveLoadFile() throws TasksValidateException {
 
         epic1Id = tasksManager.addEpic(epic1);
         subtask1.setEpicId(epic1Id);
@@ -65,12 +76,13 @@ class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasksManager
         //System.out.println(tasksManager.getTask(task1Id));
         //System.out.println(tasksManager.getEpic(epic1Id));
 
-        final Path pathSaveFile = Path.of("save.csv");
-        File saveFile = new File(String.valueOf(pathSaveFile));
-        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(saveFile);
+        HttpTasksManager httpTasksManager = HttpTasksManager.loadFromServer(URI.create("http://localhost:8081"));
 
-        Assertions.assertEquals(tasksManager.getAllTasks(), fileBackedTasksManager.getAllTasks(), "Задачи не совпадают!");
-        Assertions.assertEquals(tasksManager.getAllSubtasks(), fileBackedTasksManager.getAllSubtasks(), "Подзадачи не совпадают!");
-        Assertions.assertEquals(tasksManager.getAllEpics(), fileBackedTasksManager.getAllEpics(), "Эпики не совпадают!");
+        assertEquals(tasksManager.getAllTasks(), httpTasksManager.getAllTasks(), "Задачи не совпадают!");
+        assertEquals(tasksManager.getAllSubtasks(), httpTasksManager.getAllSubtasks(), "Подзадачи не совпадают!");
+        assertEquals(tasksManager.getAllEpics(), httpTasksManager.getAllEpics(), "Эпики не совпадают!");
+
+        server.stop();
     }
+
 }

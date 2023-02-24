@@ -1,5 +1,7 @@
 package managers;
 
+import managers.exceptions.TaskNotFoundException;
+import managers.exceptions.TasksValidateException;
 import tasks.*;
 
 import java.time.LocalDateTime;
@@ -15,18 +17,18 @@ public interface TasksManager {
 
     Integer addEpic(Epic epic);                                                // Присвоить Ид составной задаче и записать в epics
 
-    void updateTask(SimpleTask simpleTask) throws TasksValidateException;                                    // Обновить простую задачу
+    void updateTask(SimpleTask simpleTask) throws TasksValidateException, TaskNotFoundException;                                    // Обновить простую задачу
 
-    void updateSubtask(Subtask subtask) throws TasksValidateException;                                       // Обновить подзадачу и поверить статус составной
+    void updateSubtask(Subtask subtask) throws TasksValidateException, TaskNotFoundException;                                       // Обновить подзадачу и поверить статус составной
 
-    void updateEpicTask(Epic epic);                                            // Обновить составную задачу и проверить статус
+    void updateEpicTask(Epic epic) throws TaskNotFoundException;                                            // Обновить составную задачу и проверить статус
 
-    void removeTaskById(int id);                                               // Удалить простую задачу по Ид
+    void removeTaskById(int id) throws TaskNotFoundException;                                               // Удалить простую задачу по Ид
 
-    void removeSubtaskById(Integer id);                                        // Удалить составную задачу по Ид, удалить ее из списка
+    void removeSubtaskById(Integer id) throws TaskNotFoundException;                                        // Удалить составную задачу по Ид, удалить ее из списка
 
     // подзадач составной задачи
-    void removeEpicById(int id);                                               // Удалить составную задачу по Ид и удалить ее подзадачи
+    void removeEpicById(int id) throws TaskNotFoundException;                                               // Удалить составную задачу по Ид и удалить ее подзадачи
 
     void removeAllTasks();                                                     // Удалить все простые задачи
 
@@ -40,7 +42,7 @@ public interface TasksManager {
 
     List<Epic> getAllEpics();                                                  // Вернуть список составных задачь
 
-    SimpleTask getTask(Integer taskId);                                        // Вернуть простую задачу по Ид, записать в историю
+    SimpleTask getTask(Integer taskId) throws TaskNotFoundException;                                        // Вернуть простую задачу по Ид, записать в историю
 
     Subtask getSubtask(Integer subtaskId);                                     // Вернуть подзадачу по Ид, записать в историю
 

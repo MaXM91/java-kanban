@@ -1,7 +1,8 @@
 
 import managers.InMemoryTasksManager;
 import managers.StatusTask;
-import managers.TasksValidateException;
+import managers.exceptions.TaskNotFoundException;
+import managers.exceptions.TasksValidateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void getRemoveHistory() {
+    void getRemoveHistory() throws TaskNotFoundException {
         //Заполнение истории
         List<Task> savedTask = new ArrayList<>();
 

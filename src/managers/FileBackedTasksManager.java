@@ -1,5 +1,8 @@
 package managers;
 
+import managers.exceptions.ManagerSaveException;
+import managers.exceptions.TaskNotFoundException;
+import managers.exceptions.TasksValidateException;
 import tasks.*;
 
 import java.io.File;
@@ -20,9 +23,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
     public static void main(String[] args) throws ManagerSaveException, IOException {
 
-        final Managers managers = new Managers();
-        final TasksManager tasksManager = managers.getDefault();
-
+        final TasksManager tasksManager = Managers.getDefault();
 
         final Path pathSaveFile = Path.of("save.csv");
 
@@ -62,37 +63,37 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     }
 
     @Override
-    public void updateTask(SimpleTask simpleTask) throws TasksValidateException {
+    public void updateTask(SimpleTask simpleTask) throws TasksValidateException, TaskNotFoundException {
         super.updateTask(simpleTask);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws TasksValidateException {
+    public void updateSubtask(Subtask subtask) throws TasksValidateException, TaskNotFoundException {
         super.updateSubtask(subtask);
         save();
     }
 
     @Override
-    public void updateEpicTask(Epic epic) {
+    public void updateEpicTask(Epic epic) throws TaskNotFoundException {
         super.updateEpicTask(epic);
         save();
     }
 
     @Override
-    public void removeTaskById(int id) {
+    public void removeTaskById(int id) throws TaskNotFoundException {
         super.removeTaskById(id);
         save();
     }
 
     @Override
-    public void removeSubtaskById(Integer id) {
+    public void removeSubtaskById(Integer id) throws TaskNotFoundException {
         super.removeSubtaskById(id);
         save();
     }
 
     @Override
-    public void removeEpicById(int id) {
+    public void removeEpicById(int id) throws TaskNotFoundException {
         super.removeEpicById(id);
         save();
     }
@@ -131,7 +132,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
     }
 
     @Override
-    public SimpleTask getTask(Integer taskId) {
+    public SimpleTask getTask(Integer taskId) throws TaskNotFoundException {
         SimpleTask simpleTask = super.getTask(taskId);
         save();
         return simpleTask;
@@ -161,20 +162,20 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return super.getEpicSubtasks(epicId);
     }
 
-    private void save() throws ManagerSaveException {
+    protected void save() throws ManagerSaveException {
         try (FileWriter fileWriter = new FileWriter(pathFileForSave.toFile(), StandardCharsets.UTF_8)) {
             fileWriter.write("id,type,name,status,description,startDateTime,duration,epic\n");
 
-            for (Integer id : tasks.keySet()) {
-                fileWriter.write(toString(tasks.get(id)) + "\n");
+            for (Integer id : InMemoryTasksManager.tasks.keySet()) {
+                fileWriter.write(toString(InMemoryTasksManager.tasks.get(id)) + "\n");
             }
 
-            for (Integer id : epics.keySet()) {
-                fileWriter.write(toString(epics.get(id)) + "\n");
+            for (Integer id : InMemoryTasksManager.epics.keySet()) {
+                fileWriter.write(toString(InMemoryTasksManager.epics.get(id)) + "\n");
             }
 
-            for (Integer id : subtasks.keySet()) {
-                fileWriter.write(toString(subtasks.get(id)) + "\n");
+            for (Integer id : InMemoryTasksManager.subtasks.keySet()) {
+                fileWriter.write(toString(InMemoryTasksManager.subtasks.get(id)) + "\n");
             }
 
             fileWriter.write("\n");
@@ -222,16 +223,16 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
                 Task task = fromString(lineTask[i]);
                 if (task instanceof SimpleTask) {
                     SimpleTask simpleTask = (SimpleTask) task;
-                    tasks.put(simpleTask.getId(), simpleTask);
-                    validatedPrioritizedTasks.put(simpleTask.getStartDateTime(), simpleTask);
+                    InMemoryTasksManager.tasks.put(simpleTask.getId(), simpleTask);
+                    InMemoryTasksManager.validatedPrioritizedTasks.put(simpleTask.getStartDateTime(), simpleTask);
                 } else if (task instanceof Subtask) {
                     Subtask subtask = (Subtask) task;
-                    subtasks.put(subtask.getId(), subtask);
-                    epics.get(subtask.getEpicId()).setSubtaskIds(subtask.getId());
-                    validatedPrioritizedTasks.put(subtask.getStartDateTime(), subtask);
+                    InMemoryTasksManager.subtasks.put(subtask.getId(), subtask);
+                    InMemoryTasksManager.epics.get(subtask.getEpicId()).setSubtaskIds(subtask.getId());
+                    InMemoryTasksManager.validatedPrioritizedTasks.put(subtask.getStartDateTime(), subtask);
                 } else if (task instanceof Epic) {
                     Epic epic = (Epic) task;
-                    epics.put(epic.getId(), epic);
+                    InMemoryTasksManager.epics.put(epic.getId(), epic);
                 }
             }
         }
@@ -239,12 +240,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         if (!lineTask[lineTask.length - 1].equals("HistoryIsEmpty")) {
             List<Integer> historyIds = historyFromString(lineTask[lineTask.length - 1]);
             for (Integer historyId : historyIds) {
-                if (tasks.get(historyId) != null) {
-                    historyManager.add(tasks.get(historyId));
-                } else if (subtasks.get(historyId) != null) {
-                    historyManager.add(subtasks.get(historyId));
-                } else if (epics.get(historyId) != null) {
-                    historyManager.add(epics.get(historyId));
+                if (InMemoryTasksManager.tasks.get(historyId) != null) {
+                    InMemoryTasksManager.historyManager.add(InMemoryTasksManager.tasks.get(historyId));
+                } else if (InMemoryTasksManager.subtasks.get(historyId) != null) {
+                    InMemoryTasksManager.historyManager.add(InMemoryTasksManager.subtasks.get(historyId));
+                } else if (InMemoryTasksManager.epics.get(historyId) != null) {
+                    InMemoryTasksManager.historyManager.add(InMemoryTasksManager.epics.get(historyId));
                 }
             }
         }

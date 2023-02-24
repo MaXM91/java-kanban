@@ -1,7 +1,7 @@
-package managers;
+package managers.exceptions;
 
 public class TasksValidateException extends Throwable {
-    TasksValidateException(String message) {
+    public TasksValidateException(String message) {
         super(message);
     }
 }

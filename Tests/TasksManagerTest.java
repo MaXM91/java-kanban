@@ -1,8 +1,7 @@
 
-import managers.InMemoryTasksManager;
-import managers.StatusTask;
-import managers.TasksManager;
-import managers.TasksValidateException;
+import managers.*;
+import managers.exceptions.TaskNotFoundException;
+import managers.exceptions.TasksValidateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -40,7 +39,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     Epic epic2;
 
     @Test
-    void addTask() throws TasksValidateException {
+    void addTask() throws TasksValidateException, TaskNotFoundException {
         task1Id = tasksManager.addTask(task1);
         SimpleTask savedTask = tasksManager.getTask(task1Id);
 
@@ -99,7 +98,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void updateTask() throws TasksValidateException {
+    void updateTask() throws TasksValidateException, TaskNotFoundException {
         task1Id = tasksManager.addTask(task1);
 
         LocalDateTime task1LocalDateTime = LocalDateTime.of(2010, 1, 17, 0, 0, 0);
@@ -123,7 +122,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void updateSubtask() throws TasksValidateException {
+    void updateSubtask() throws TasksValidateException, TaskNotFoundException {
         epic1Id = tasksManager.addEpic(epic1);
         subtask1.setEpicId(epic1Id);
         subtask1Id = tasksManager.addSubtask(subtask1);
@@ -151,7 +150,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void updateEpicTask() throws TasksValidateException {
+    void updateEpicTask() throws TasksValidateException, TaskNotFoundException {
         epic1Id = tasksManager.addEpic(epic1);
 
         LocalDateTime epic1LocalDateTime = LocalDateTime.of(2010, 2, 7, 0, 0, 0);
@@ -180,7 +179,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
 
 
     @Test
-    void removeTaskById() throws TasksValidateException {
+    void removeTaskById() throws TasksValidateException, TaskNotFoundException {
         task1Id = tasksManager.addTask(task1);
 
         tasksManager.removeTaskById(task1Id);
@@ -189,7 +188,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void removeSubtaskById() throws TasksValidateException {
+    void removeSubtaskById() throws TasksValidateException, TaskNotFoundException {
         epic1Id = tasksManager.addEpic(epic1);
         subtask1.setEpicId(epic1Id);
         subtask1Id = tasksManager.addSubtask(subtask1);
@@ -201,7 +200,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void removeEpicById() throws TasksValidateException {
+    void removeEpicById() throws TasksValidateException, TaskNotFoundException {
         epic1Id = tasksManager.addEpic(epic1);
         subtask1.setEpicId(epic1Id);
         tasksManager.addSubtask(subtask1);
@@ -296,7 +295,7 @@ abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    void getTask() throws TasksValidateException {
+    void getTask() throws TasksValidateException, TaskNotFoundException {
         task1Id = tasksManager.addTask(task1);
         Task savedTask = tasksManager.getTask(task1Id);
 

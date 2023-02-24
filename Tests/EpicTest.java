@@ -1,7 +1,7 @@
 
 import managers.InMemoryTasksManager;
 import managers.StatusTask;
-import managers.TasksValidateException;
+import managers.exceptions.TasksValidateException;
 import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.BeforeEach;
