@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
-
     protected Node<Task> head;
     protected Node<Task> tail;
     private final HashMap<Integer, Node<Task>> linkedHashMap = new HashMap<>();
@@ -84,5 +83,4 @@ public class InMemoryHistoryManager implements HistoryManager {
             this.prev = prev;
         }
     }
-
 }

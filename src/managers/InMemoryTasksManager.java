@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTasksManager implements TasksManager {
-
     private int nextTask = 1;
     protected static final HistoryManager historyManager = Managers.getDefaultHistory();
     protected static HashMap<Integer, SimpleTask> tasks = new HashMap<>();

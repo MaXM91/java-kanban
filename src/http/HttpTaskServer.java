@@ -51,7 +51,8 @@ public class HttpTaskServer {
                         String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                         SimpleTask newSimpleTask = gson.fromJson(body, SimpleTask.class);
 
-                        if (newSimpleTask.getName().isEmpty() || newSimpleTask.getDescription().isEmpty() || newSimpleTask.getStatus() == null) {
+                        if (newSimpleTask.getName().isEmpty() || newSimpleTask.getDescription().isEmpty() ||
+                                newSimpleTask.getStatus() == null) {
                             writeResponse(exchange, "Поля задачи не могут быть пустыми", 400);
                             return;
                         }
@@ -133,7 +134,8 @@ public class HttpTaskServer {
                         Subtask newSubtask = gson.fromJson(body, Subtask.class);
                         Integer epicId = newSubtask.getEpicId();
 
-                        if (newSubtask.getName().isEmpty() || newSubtask.getDescription().isEmpty() || newSubtask.getStatus() == null || epicId <= 0) {
+                        if (newSubtask.getName().isEmpty() || newSubtask.getDescription().isEmpty() ||
+                                newSubtask.getStatus() == null || epicId <= 0) {
                             writeResponse(exchange, "Поля подзадачи не могут быть пустыми", 400);
                             return;
                         }
@@ -155,7 +157,8 @@ public class HttpTaskServer {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
                         Integer epicId = subtask.getEpicId();
 
-                        if (subtask.getName().isEmpty() || subtask.getDescription().isEmpty() || subtask.getStatus() == null || epicId == null) {
+                        if (subtask.getName().isEmpty() || subtask.getDescription().isEmpty() ||
+                                subtask.getStatus() == null || epicId == null) {
                             writeResponse(exchange, "Поля подзадачи не могут быть пустыми", 400);
                             return;
                         }
@@ -209,7 +212,8 @@ public class HttpTaskServer {
                         String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                         Epic newEpic = gson.fromJson(body, Epic.class);
 
-                        if (newEpic.getName().isEmpty() || newEpic.getDescription().isEmpty() || newEpic.getStatus() == null || newEpic.getSubtaskIds() == null) {
+                        if (newEpic.getName().isEmpty() || newEpic.getDescription().isEmpty() ||
+                                newEpic.getStatus() == null || newEpic.getSubtaskIds() == null) {
                             writeResponse(exchange, "Поля эпика не могут быть пустыми", 400);
                             return;
                         }

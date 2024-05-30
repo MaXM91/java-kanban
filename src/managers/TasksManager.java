@@ -42,7 +42,7 @@ public interface TasksManager {
 
     List<Epic> getAllEpics();                                                  // Вернуть список составных задачь
 
-    SimpleTask getTask(Integer taskId) throws TaskNotFoundException;                                        // Вернуть простую задачу по Ид, записать в историю
+    SimpleTask getTask(Integer taskId) throws TaskNotFoundException;           // Вернуть простую задачу по Ид, записать в историю
 
     Subtask getSubtask(Integer subtaskId);                                     // Вернуть подзадачу по Ид, записать в историю
 

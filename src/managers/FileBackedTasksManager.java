@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static void main(String[] args) throws ManagerSaveException, IOException {
 
         final TasksManager tasksManager = Managers.getDefault();
@@ -33,7 +31,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     final private Path pathFileForSave;
     static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
 
