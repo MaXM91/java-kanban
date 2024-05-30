@@ -1,10 +1,6 @@
 # Tasks Manager
-  
-###   Принимает объекты: задача/составная задача/ подзадача.
-###   Каждому объекту при соблюдении условия правильности распределения
-###   свободного времени присваивается ИД и производится запись.
-###   Объект содержит ИД, имя, описание, статус, даты начала выполнения и
-###   продолжительность. Запись данных производится в файл.
-### 
-###   
-### 
+### Preamble
+A task tracker service that allows you to effectively organize collaboration.
+### Launch
+Deploy the project with the default profile.
+stats-service -> ewm-service.  
